@@ -1,0 +1,51 @@
+
+
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_NODE_API_URL=http://backend-node:4000
+      - NEXT_PUBLIC_PYTHON_API_URL=http://backend-python:8000
+      - NEXT_PUBLIC_GO_API_URL=http://backend-go:8080
+    depends_on:
+      - backend-node
+      - backend-python
+      - backend-go
+
+  backend-node:
+    build:
+      context: ./backend-node
+      dockerfile: Dockerfile
+    ports:
+      - "4000:4000"
+    environment:
+      - NODE_ENV=production
+      - PORT=4000
+
+  backend-python:
+    build:
+      context: ./backend-python
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - PYTHONUNBUFFERED=1
+
+  backend-go:
+    build:
+      context: ./backend-go
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - GIN_MODE=release
+
+networks:
+  default:
+    driver: bridge
